@@ -93,6 +93,22 @@ font-size:1rem;color:var(--ink2);line-height:1;padding:0}
 .stp button:hover{background:var(--tile);color:var(--aqua)}
 .stp span{font-family:"JetBrains Mono",monospace;font-size:.76rem;font-weight:600;
 min-width:44px;text-align:center;padding:0 3px}
+.gauge{margin-bottom:12px}
+.gauge:last-child{margin-bottom:0}
+.gh{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin-bottom:5px}
+.gh .lb{font-family:"JetBrains Mono",monospace;font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink3)}
+.gh .vl{font-family:"JetBrains Mono",monospace;font-size:.86rem;font-weight:600}
+.gt{height:7px;background:var(--lane);border-radius:4px;overflow:hidden}
+.gt i{display:block;height:100%;border-radius:4px;background:var(--aqua);transition:width .2s}
+.gt i.full{background:var(--aqua)}
+.gt i.low{background:var(--gold)}
+.qa{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px}
+.qa button{appearance:none;cursor:pointer;background:var(--panel);border:1px solid var(--lane);
+border-radius:99px;padding:5px 11px;font-size:.75rem;font-weight:600;color:var(--ink2);min-height:32px}
+.qa button:hover{border-color:var(--aqua);color:var(--aqua)}
+.qa input{width:88px;min-height:32px;padding:4px 8px;font-size:.8rem;
+font-family:"JetBrains Mono",monospace;text-align:center}
+.brk{font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--ink3);margin-top:5px;line-height:1.5}
 .bil{width:100%;border-collapse:collapse;font-family:"JetBrains Mono",monospace;font-size:.8rem}
 .bil th{font-size:.6rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3);font-weight:600;
 text-align:right;padding:0 0 6px}
@@ -106,6 +122,8 @@ border:1px solid var(--lane);border-radius:var(--r);padding:8px 10px;cursor:poin
 .sea:hover{border-color:var(--aqua)}
 .sea.empty{background:var(--panel)}
 .sea.rest{background:var(--tile)}
+.sea.add{background:none;border-style:dashed;min-height:30px;padding:4px 10px;justify-content:center}
+.sea.add .n{flex:0 0 auto;font-size:.74rem;font-weight:500;color:var(--ink3);font-style:normal}
 .sea .t{font-size:1rem;flex:0 0 auto;line-height:1}
 .sea .n{flex:1;font-size:.82rem;font-weight:600;line-height:1.25}
 .sea.empty .n{font-weight:400;color:var(--ink3);font-style:italic}
@@ -273,6 +291,12 @@ body{background:#fff;font-size:10pt}.days{grid-template-columns:repeat(2,1fr)}.d
   <section>
     <div class="card"><table class="bil" id="jBil"></table></div>
   </section>
+  <section>
+    <div class="eyebrow">Dépense &amp; hydratation</div>
+    <div class="card" id="jGauge" style="margin-top:8px"></div>
+    <div class="note gold" style="margin-top:10px"><h4>À ne pas rajouter à ce que tu manges</h4>
+      <p>La dépense d'entraînement est <b>déjà comptée</b> dans la cible de 3 300 kcal : elle a servi à l'estimer. La compter une deuxième fois en mangeant davantage annulerait le déficit. Ce chiffre est là pour voir ta charge de la semaine, pas pour ouvrir un crédit calorique.</p></div>
+  </section>
   <section id="jSea"></section>
   <section id="jLog"></section>
   <section id="jMeals"></section>
@@ -289,7 +313,12 @@ body{background:#fff;font-size:10pt}.days{grid-template-columns:repeat(2,1fr)}.d
       <div class="f"><label>Protéines</label><input type="number" id="tp" value="230" step="5"></div>
       <div class="f"><label>Lipides</label><input type="number" id="tl" value="90" step="5"></div>
       <div class="f"><label>Glucides</label><input type="number" id="tg" value="390" step="10"></div>
-    </div></div>
+      <div class="f"><label>Eau (L / jour)</label><input type="number" id="te" value="4.5" step="0.25"></div>
+      <div class="f"><label>Pas / jour</label><input type="number" id="tst" value="9000" step="500"></div>
+      <div class="f"><label>kcal / 1 000 pas</label><input type="number" id="tkp" value="60" step="5"></div>
+    </div>
+    <p class="lede" style="margin-top:9px;font-size:.86rem">La dépense par pas dépend du poids : à 160 kg, mille pas coûtent environ 60 kcal. Ajuste ce chiffre à mesure que tu descends — vers 130 kg il tombera autour de 50.</p>
+    </div>
   </section>
 
   <section>
@@ -340,6 +369,7 @@ body{background:#fff;font-size:10pt}.days{grid-template-columns:repeat(2,1fr)}.d
       <div class="f"><label>Tour de taille (cm)</label><input type="number" id="stt" step="0.5" placeholder="—"></div>
       <div class="f"><label>Genoux /10</label><input type="number" id="sg" min="0" max="10" step="1" placeholder="—"></div>
       <div class="f"><label>Pas</label><input type="number" id="ss" step="500" placeholder="—"></div>
+      <div class="f"><label>Eau (L)</label><input type="number" id="se" step="0.25" placeholder="—"></div>
       <button class="btn" id="sSave">Enregistrer</button>
     </div></div>
   </section>
@@ -2520,6 +2550,7 @@ ingredients:
     type      muscu | nage | marche | repos
     jour      jour de semaine conseillé (1 = lundi … 7 = dimanche)
     duree     en minutes
+    depense   dépense estimée en kcal — indicative, à ±25 %
     note      une ligne libre
 
   EXERCICES (type muscu) — un par ligne, quatre champs :
@@ -2541,6 +2572,7 @@ ingredients:
 type: muscu
 jour: 1
 duree: 70
+depense: 420
 note: Dominante hanche. Amplitude plafonnée à 90° sur tout ce qui plie le genou.
 exercices:
 - Presse à cuisses, pieds hauts et larges | 4 | 8-10 | Arrêt net à 90°. Pieds hauts sur la plateforme : le travail part vers fessiers et ischios, l'angle du genou s'ouvre.
@@ -2555,6 +2587,7 @@ exercices:
 type: muscu
 jour: 2
 duree: 60
+depense: 340
 note: RPE 7-8 sur les mouvements principaux, 8-9 sur les accessoires.
 exercices:
 - Développé couché | 4 | 6 | Ne force pas la barre jusqu'à la poitrine si l'épaule tire : tes bras sont longs, l'amplitude complète coûte cher.
@@ -2568,6 +2601,7 @@ exercices:
 type: muscu
 jour: 4
 duree: 70
+depense: 430
 note: Séance de force. Repos 3 min sur le rack pull.
 exercices:
 - Rack pull (barre à hauteur sous-genou) | 4 | 5 | Le remplaçant du trap bar. Amplitude réduite : dos protégé, genoux quasi épargnés. À 2m03, supérieur au soulevé au sol.
@@ -2582,6 +2616,7 @@ exercices:
 type: muscu
 jour: 5
 duree: 60
+depense: 340
 note: Volume sur le dos et les épaules postérieures.
 exercices:
 - Tractions assistées ou tirage prise neutre | 4 | 8 | Descente contrôlée sur 3 secondes.
@@ -2595,6 +2630,7 @@ exercices:
 type: nage
 jour: 3
 duree: 45
+depense: 700
 note: Test simple — tu dois tenir la même vitesse au 1 800ᵉ mètre qu'au 100ᵉ.
 bloc:
 400 m échauffement, crawl souple
@@ -2605,6 +2641,7 @@ bloc:
 type: nage
 jour: 5
 duree: 45
+depense: 750
 note: Brasse à éviter — le ciseau agresse le genou.
 bloc:
 400 m échauffement
@@ -2617,6 +2654,7 @@ bloc:
 type: nage
 jour: 6
 duree: 40
+depense: 600
 note: La séance la plus facile des trois. Progression : +100 à 200 m par semaine.
 bloc:
 400 m échauffement
@@ -2628,6 +2666,7 @@ bloc:
 type: marche
 jour: 6
 duree: 40
+depense: 350
 note: Selle réglée haute sur le vélo : ça réduit l'angle de flexion du genou. Zone 2 = 110-128 bpm.
 bloc:
 5 min d'échauffement progressif
@@ -2638,6 +2677,7 @@ bloc:
 type: marche
 jour: 7
 duree: 60
+depense: 330
 note: Allure libre. Bonnes chaussures : à 160 kg l'amorti change la fatigue de fin de journée.
 bloc:
 60 min de marche continue, terrain plat
@@ -2646,6 +2686,7 @@ bloc:
 type: repos
 jour: 7
 duree: 0
+depense: 0
 note: Repos complet. C'est pendant les jours de repos que le muscle se construit, pas à la salle.
 </script>
 <script>
@@ -2674,6 +2715,14 @@ var SEA=[],SBY={},LOG={},MES={};
 var SICO={muscu:'\u25C6',nage:'\u3030',marche:'\u25B3',repos:'\u25CB'};
 var STYP={muscu:'Musculation',nage:'Natation',marche:'Cardio & marche',repos:'Repos'};
 var DAY={};
+function seaL(iso){var v=slots[iso+'|sea'];
+  if(!v)return [];
+  if(typeof v==='string')return [v];
+  return v.slice();}
+function seaSet(iso,a){
+  a=(a||[]).filter(function(x){return x&&SBY[x];});
+  if(a.length)slots[iso+'|sea']=a;else delete slots[iso+'|sea'];}
+function seaKey(nom){return 'sea:'+nom;}
 var CAT=[],BY={},slots={},weeks=[],days=[];
 var LS=false;
 try{localStorage.setItem('fdr:t','1');localStorage.removeItem('fdr:t');LS=true;}catch(e){}
@@ -2688,7 +2737,7 @@ function save(){
   if(BOOTING)return;
   lset(pkey(),JSON.stringify(slots));
   lset('fdr:set',JSON.stringify({k:+$('tk').value,p:+$('tp').value,l:+$('tl').value,
-    g:+$('tg').value,dw:$('dw').value}));
+    g:+$('tg').value,dw:$('dw').value,e:$('te').value,st:$('tst').value,kp:$('tkp').value}));
   flash();
 }
 function loadMonth(){var raw=lget(pkey());slots={};
@@ -2736,7 +2785,7 @@ function parseSea(txt){
     var line=L[i],m;
     if(/^\s*<!--/.test(line)){while(i<L.length&&L[i].indexOf('-->')<0)i++;continue;}
     if((m=line.match(/^##\s+(.+?)\s*$/))){cur={nom:m[1],type:'muscu',jour:null,duree:null,
-      note:'',ex:[],bloc:[]};out.push(cur);mode='';continue;}
+      dep:0,note:'',ex:[],bloc:[]};out.push(cur);mode='';continue;}
     if(!cur)continue;
     if(/^exercices\s*:/.test(line)){mode='ex';continue;}
     if(/^bloc\s*:/.test(line)){mode='bloc';continue;}
@@ -2747,7 +2796,8 @@ function parseSea(txt){
       var k=m[1].toLowerCase(),v=m[2].trim();
       if(k==='type')cur.type=v;else if(k==='note')cur.note=v;
       else if(k==='jour')cur.jour=parseInt(v,10)||null;
-      else if(k==='duree')cur.duree=parseInt(v,10)||null;}
+      else if(k==='duree')cur.duree=parseInt(v,10)||null;
+      else if(k==='depense')cur.dep=parseInt(v,10)||0;}
   }
   return out;
 }
@@ -2820,10 +2870,14 @@ function render(){
          JS[o.wd]+' '+o.d+' <em>'+MOIS[+$('mo').value].slice(0,4)+'.</em></span><span class="dacts">'+
          '<button class="ico" data-cp="'+o.iso+'" title="Copier la veille">⧉</button>'+
          '<button class="ico" data-vd="'+o.iso+'" title="Vider le jour">×</button></span></div>';
-      var sv=slots[o.iso+'|sea'],sr=SBY[sv];
-      h+='<button class="sea'+(sr?(sr.type==='repos'?' rest':''):' empty')+'" data-d="'+o.iso+'" data-s="sea">'+
-         '<span class="t">'+(sr?SICO[sr.type]||'●':'＋')+'</span><span class="n">'+
-         (sr?esc(sr.nom):'Séance…')+'</span><span class="d">'+(sr&&sr.duree?sr.duree+' min':'')+'</span></button>';
+      var sl=seaL(o.iso);
+      sl.forEach(function(nm,si){
+        var sr=SBY[nm];if(!sr)return;
+        h+='<button class="sea'+(sr.type==='repos'?' rest':'')+'" data-d="'+o.iso+'" data-s="sea#'+si+'">'+
+           '<span class="t">'+(SICO[sr.type]||'●')+'</span><span class="n">'+esc(sr.nom)+
+           '</span><span class="d">'+(sr.duree?sr.duree+' min':'')+'</span></button>';});
+      h+='<button class="sea '+(sl.length?'add':'empty')+'" data-d="'+o.iso+'" data-s="sea">'+
+         '<span class="t">＋</span><span class="n">'+(sl.length?'Ajouter':'Séance…')+'</span></button>';
       SLOTS.forEach(function(s){
         var v=slots[o.iso+'|'+s.k],r=BY[v];
         h+='<button class="slot" data-d="'+o.iso+'" data-s="'+s.k+'">'+
@@ -2879,15 +2933,21 @@ function bindCal(){
       if(i<1)return; var pv=days[i-1].iso;
       SLOTS.forEach(function(s){var v=slots[pv+'|'+s.k];
         if(v)slots[iso+'|'+s.k]=v;else delete slots[iso+'|'+s.k];});
-      render();};});
+      seaSet(iso,seaL(pv));
+      render();if(dayISO()===iso)renderDay();};});
   [].forEach.call($('cal').querySelectorAll('[data-vd]'),function(b){
-    b.onclick=function(){SLOTS.forEach(function(s){delete slots[b.dataset.vd+'|'+s.k];});render();};});
+    b.onclick=function(){var i=b.dataset.vd;
+      SLOTS.forEach(function(s){delete slots[i+'|'+s.k];});
+      delete slots[i+'|sea'];delete DAY[i];saveDay();
+      render();if(dayISO()===i)renderDay();};});
   [].forEach.call($('cal').querySelectorAll('[data-rw]'),function(a){
     a.onclick=function(e){e.preventDefault();
       var w=weeks[+a.dataset.rw-1],src=w.days[0].iso;
-      w.days.slice(1).forEach(function(o){SLOTS.forEach(function(s){
-        var v=slots[src+'|'+s.k];if(v)slots[o.iso+'|'+s.k]=v;else delete slots[o.iso+'|'+s.k];});});
-      render();};});
+      w.days.slice(1).forEach(function(o){
+        SLOTS.forEach(function(s){
+          var v=slots[src+'|'+s.k];if(v)slots[o.iso+'|'+s.k]=v;else delete slots[o.iso+'|'+s.k];});
+        seaSet(o.iso,seaL(src));});
+      render();renderDay();};});
 }
 function stats(){
   var n=days.length,tot=[0,0,0,0],okd=0,fill=0;
@@ -2917,7 +2977,9 @@ function openPick(iso,sk){
   pick.day=iso;pick.slot=sk;pick.q='';pick.fil='';
   $('pq').value='';
   var dt=new Date(iso+'T12:00:00');
-  var s=(sk==='sea')?{lab:'Séance',h:'entraînement'}:SLOTS.filter(function(x){return x.k===sk;})[0];
+  var isSea=sk==='sea'||sk.indexOf('sea#')===0;
+  var s=isSea?{lab:(sk==='sea'?'Ajouter une séance':'Remplacer la séance'),h:'entraînement'}
+             :SLOTS.filter(function(x){return x.k===sk;})[0];
   $('pTitle').firstChild.textContent=s.lab;
   $('pSub').textContent=JOURS[dt.getDay()]+' '+dt.getDate()+' '+MOIS[dt.getMonth()]+' · '+s.h;
   var fl=[['','Tout'],['reuse','♻ Réutilise mes ingrédients'],['t15','≤ 15 min'],['n1','Facile']];
@@ -2930,7 +2992,7 @@ function openPick(iso,sk){
 }
 function closePick(){$('ov').classList.remove('on');document.body.style.overflow='';}
 function drawPick(){
-  if(pick.slot==='sea')return drawSea();
+  if(pick.slot==='sea'||pick.slot.indexOf('sea#')===0)return drawSea();
   var s=SLOTS.filter(function(x){return x.k===pick.slot;})[0];
   var cur=slots[pick.day+'|'+pick.slot];
   var wi=weekIngs(weekOf(pick.day),pick.day,pick.slot);
@@ -2965,7 +3027,8 @@ function drawPick(){
   $('pList').scrollTop=0;
 }
 function drawSea(){
-  var cur=slots[pick.day+'|sea'],q=nrm(pick.q.trim());
+  var sl=seaL(pick.day),si=pick.slot.indexOf('#')>0?+pick.slot.split('#')[1]:-1;
+  var cur=si>=0?sl[si]:null,q=nrm(pick.q.trim());
   $('pFil').innerHTML='';
   var g={},ord=[];
   SEA.forEach(function(r){
@@ -2983,7 +3046,11 @@ function drawSea(){
         (r.note?'<div class="pr-i">'+esc(r.note)+'</div>':'')+'</div>';});});
   $('pList').innerHTML=h||'<p class="lede" style="padding:24px 4px">Aucune séance ne correspond.</p>';
   [].forEach.call($('pList').querySelectorAll('.pr'),function(e){
-    e.onclick=function(){slots[pick.day+'|sea']=e.dataset.n;closePick();render();
+    e.onclick=function(){
+      var a=seaL(pick.day);
+      if(si>=0)a[si]=e.dataset.n;
+      else if(a.indexOf(e.dataset.n)<0)a.push(e.dataset.n);
+      seaSet(pick.day,a);closePick();render();
       if(dayISO()===pick.day)renderDay();};});
   $('pList').scrollTop=0;
 }
@@ -3060,6 +3127,64 @@ function renderCourses(){
 /* ---------- vue jour ---------- */
 function saveDay(){lset('fdr:day',JSON.stringify(DAY));flash();}
 function ss(iso,k){DAY[iso]=DAY[iso]||{};DAY[iso][k]=DAY[iso][k]||{d:false,m:1};return DAY[iso][k];}
+function dv(iso,k,def){var d=DAY[iso];return (d&&d[k]!=null)?d[k]:def;}
+function setdv(iso,k,v){DAY[iso]=DAY[iso]||{};
+  if(v==null)delete DAY[iso][k];else DAY[iso][k]=v;saveDay();}
+function getSteps(iso){
+  var v=dv(iso,'st',null);
+  if(v!=null)return v;
+  return (MES[iso]&&MES[iso].s!=null)?MES[iso].s:null;}
+function tEau(){return (parseFloat($('te').value)||4.5)*1000;}
+function tPas(){return parseInt($('tst').value,10)||9000;}
+function kPas(){return parseFloat($('tkp').value)||60;}
+function burnSea(iso){
+  var t=0;
+  seaL(iso).forEach(function(nm){var r=SBY[nm];
+    if(r&&ss(iso,seaKey(nm)).d)t+=(r.dep||0);});
+  return t;}
+function burnSteps(iso){var st=getSteps(iso);return st?Math.round(st/1000*kPas()):0;}
+function burnTot(iso){
+  var o=dv(iso,'bo',null);
+  return o!=null?o:(burnSea(iso)+burnSteps(iso));}
+function fL(ml){return String(Math.round(ml/100)/10).replace('.',',');}
+function gauge(lb,val,tgt,unit,pct){
+  var p=Math.min(100,Math.round(pct));
+  var c=p>=90?'full':(p>=55?'':'low');
+  return '<div class="gauge"><div class="gh"><span class="lb">'+lb+'</span>'+
+    '<span class="vl">'+val+' <span style="color:var(--ink3);font-weight:400">/ '+tgt+' '+unit+'</span></span></div>'+
+    '<div class="gt"><i class="'+c+'" style="width:'+p+'%"></i></div></div>';}
+function renderGauge(iso){
+  var ml=dv(iso,'ea',0),te=tEau();
+  var st=getSteps(iso),tp=tPas();
+  var bs=burnSea(iso),bp=burnSteps(iso),ov=dv(iso,'bo',null),tot=burnTot(iso);
+  var h=gauge('Eau',fL(ml),fL(te),'L',ml/te*100)+
+    '<div class="qa"><button data-ea="250">+25 cl</button><button data-ea="500">+50 cl</button>'+
+    '<button data-ea="1000">+1 L</button><button data-ea="-250">−25 cl</button>'+
+    '<button data-ea="0">Remettre à zéro</button></div>';
+  h+='<div style="height:1px;background:var(--lane);margin:14px 0"></div>';
+  h+=gauge('Pas',st!=null?st:'—',tp,'',st?st/tp*100:0)+
+    '<div class="qa"><input type="number" id="inSt" inputmode="numeric" step="500" placeholder="pas" value="'+
+    (st!=null?st:'')+'"><button data-stc="1">Enregistrer</button></div>';
+  h+='<div style="height:1px;background:var(--lane);margin:14px 0"></div>';
+  h+='<div class="gauge"><div class="gh"><span class="lb">Dépense estimée</span>'+
+     '<span class="vl">'+tot+' <span style="color:var(--ink3);font-weight:400">kcal</span></span></div>'+
+     '<div class="brk">'+(ov!=null?'relevé saisi manuellement'
+       :'séances validées '+bs+' · pas '+bp)+'</div></div>'+
+     '<div class="qa"><input type="number" id="inBo" inputmode="numeric" step="10" placeholder="relevé montre" value="'+
+     (ov!=null?ov:'')+'"><button data-boc="1">Enregistrer</button>'+
+     (ov!=null?'<button data-bor="1">Revenir à l\'estimation</button>':'')+'</div>';
+  $('jGauge').innerHTML=h;
+  [].forEach.call($('jGauge').querySelectorAll('[data-ea]'),function(b){
+    b.onclick=function(){var d=+b.dataset.ea;
+      setdv(iso,'ea',d===0?0:Math.max(0,dv(iso,'ea',0)+d));renderDay();};});
+  var bst=$('jGauge').querySelector('[data-stc]');
+  if(bst)bst.onclick=function(){var v=$('inSt').value;
+    setdv(iso,'st',v===''?null:parseInt(v,10)||0);renderDay();renderMes();};
+  var bbo=$('jGauge').querySelector('[data-boc]');
+  if(bbo)bbo.onclick=function(){var v=$('inBo').value;
+    setdv(iso,'bo',v===''?null:parseInt(v,10)||0);renderDay();};
+  var brr=$('jGauge').querySelector('[data-bor]');
+  if(brr)brr.onclick=function(){setdv(iso,'bo',null);renderDay();};}
 function fmul(m){return m===1?'×1':'×'+String(Math.round(m*100)/100).replace('.',',');}
 function dayISO(){return $('jd').value;}
 function setDay(iso){$('jd').value=iso;$('ed')&&($('ed').value=iso);renderDay();}
@@ -3123,18 +3248,30 @@ function renderDay(){
       return '<td class="'+cl2(i,x)+'">'+x+'</td>';}).join('')+'</tr>'+
     row('Cible',[t.k,t.p,t.l,t.g]);
 
-  /* ---- séance ---- */
-  var sn=slots[iso+'|sea'],sr=SBY[sn],sst=ss(iso,'sea');
-  $('jSea').innerHTML='<div class="eyebrow">Entraînement</div>'+
-    '<div class="jc'+(sst.d?' done':'')+'" id="jcSea"><div class="jc-h">'+
-    '<span class="when">'+(sr?SICO[sr.type]:'＋')+'</span><span class="ttl">'+
-    '<b'+(sr?'':' class="none"')+'>'+(sr?esc(sr.nom):'Aucune séance planifiée')+'</b>'+
-    (sr?'<span class="mm">'+(STYP[sr.type]||'')+(sr.duree?' · '+sr.duree+' min':'')+'</span>':'')+
-    '</span>'+(sr&&sr.type!=='repos'?'<button class="tick'+(sst.d?' on':'')+'" data-tk="sea" aria-label="Valider">✓</button>':'')+
-    '</div>'+(sr&&sr.note?'<div class="jc-i">'+esc(sr.note)+'</div>':'')+
-    '<div class="jc-a"><button class="btn ghost sm" data-ch="sea">'+(sr?'Changer':'Choisir')+'</button>'+
-    (sr?'<button class="btn ghost sm" data-rm="sea">Retirer</button>':'')+'</div></div>'+
-    '<p class="swipe-hint">Glisse une carte vers la droite pour valider, vers la gauche pour la remplacer.</p>';
+  renderGauge(iso);
+
+  /* ---- séances ---- */
+  var sl=seaL(iso),sh='<div class="eyebrow">Entraînement'+(sl.length>1?' · '+sl.length+' séances':'')+'</div>';
+  if(!sl.length){
+    sh+='<div class="jc"><div class="jc-h"><span class="when">＋</span><span class="ttl">'+
+        '<b class="none">Aucune séance planifiée</b></span></div>'+
+        '<div class="jc-a"><button class="btn ghost sm" data-ch="sea">Choisir une séance</button></div></div>';
+  }else{
+    sl.forEach(function(nm,si){
+      var sr=SBY[nm];if(!sr)return;
+      var sst=ss(iso,seaKey(nm));
+      sh+='<div class="jc'+(sst.d?' done':'')+'" data-sea="'+si+'"><div class="jc-h">'+
+        '<span class="when">'+(SICO[sr.type]||'●')+'</span><span class="ttl">'+
+        '<b>'+esc(sr.nom)+'</b><span class="mm">'+(STYP[sr.type]||'')+
+        (sr.duree?' · '+sr.duree+' min':'')+'</span></span>'+
+        (sr.type!=='repos'?'<button class="tick'+(sst.d?' on':'')+'" data-tk="'+esc(seaKey(nm))+'" aria-label="Valider">✓</button>':'')+
+        '</div>'+(sr.note?'<div class="jc-i">'+esc(sr.note)+'</div>':'')+
+        '<div class="jc-a"><button class="btn ghost sm" data-ch="sea#'+si+'">Changer</button>'+
+        '<button class="btn ghost sm" data-rs="'+si+'">Retirer</button></div></div>';});
+    sh+='<div class="tools" style="margin-bottom:4px"><button class="btn ghost sm" data-ch="sea">＋ Ajouter une séance</button></div>';
+  }
+  sh+='<p class="swipe-hint">Glisse une carte vers la droite pour valider, vers la gauche pour la remplacer.</p>';
+  $('jSea').innerHTML=sh;
 
   /* ---- journal ---- */
   renderLog(iso);
@@ -3177,16 +3314,21 @@ function bindDay(iso){
     b.onclick=function(){delete slots[iso+'|'+b.dataset.rm];
       if(DAY[iso])delete DAY[iso][b.dataset.rm];
       saveDay();render();renderDay();};});
+  [].forEach.call(root.querySelectorAll('[data-rs]'),function(b){
+    b.onclick=function(){var a=seaL(iso),i=+b.dataset.rs;
+      if(DAY[iso])delete DAY[iso][seaKey(a[i])];
+      a.splice(i,1);seaSet(iso,a);saveDay();render();renderDay();};});
   [].forEach.call(root.querySelectorAll('[data-mi]'),function(b){
     b.onclick=function(){var st2=ss(iso,b.dataset.mi);
       st2.m=Math.max(0.25,Math.round((st2.m-0.25)*100)/100);saveDay();renderDay();};});
   [].forEach.call(root.querySelectorAll('[data-pl]'),function(b){
     b.onclick=function(){var st2=ss(iso,b.dataset.pl);
       st2.m=Math.min(3,Math.round((st2.m+0.25)*100)/100);saveDay();renderDay();};});
-  var sc=$('jcSea');
-  if(sc&&slots[iso+'|sea'])bindSwipe(sc,
-    function(){var st2=ss(iso,'sea');st2.d=!st2.d;saveDay();renderDay();},
-    function(){openPick(iso,'sea');});
+  [].forEach.call(root.querySelectorAll('[data-sea]'),function(el){
+    var si=+el.dataset.sea,nm=seaL(iso)[si];
+    if(!nm)return;
+    bindSwipe(el,function(){var st2=ss(iso,seaKey(nm));st2.d=!st2.d;saveDay();renderDay();},
+                 function(){openPick(iso,'sea#'+si);});});
   [].forEach.call(root.querySelectorAll('[data-slot]'),function(el){
     var k=el.dataset.slot;
     if(!slots[iso+'|'+k])return;
@@ -3214,9 +3356,18 @@ function nSets(key,e){
   return Math.max(e.s,(d&&d.length)||0);
 }
 function renderLog(iso){
-  var nom=slots[iso+'|sea'],r=SBY[nom],h='';
-  if(!r||r.type==='repos'||(!r.ex.length&&!r.bloc.length)){$('jLog').innerHTML='';renderHist();return;}
+  var out='';
+  seaL(iso).forEach(function(nm){out+=logOne(iso,nm);});
+  $('jLog').innerHTML=out;
+  bindLog(iso);
+  renderHist();
+}
+function logOne(iso,nom){
+  var r=SBY[nom],h='';
+  if(!r||r.type==='repos'||(!r.ex.length&&!r.bloc.length))return '';
   var key=lkey(iso,r.nom);LOG[key]=LOG[key]||{};
+  h+='<div class="wkhead" style="margin-top:18px"><h3>'+SICO[r.type]+' '+esc(r.nom)+'</h3>'+
+     '<span class="sub">'+(r.duree?r.duree+' min':'')+'</span></div>';
   if(r.ex.length){
     h+='<div class="card">';
     r.ex.forEach(function(e,ei){
@@ -3230,35 +3381,41 @@ function renderLog(iso){
       for(var i=0;i<ns;i++){
         var d=done[i]||[];
         h+='<span class="set"><input type="number" inputmode="decimal" step="0.5" placeholder="kg" '+
-           'data-e="'+ei+'" data-i="'+i+'" data-f="0" value="'+(d[0]!=null?d[0]:'')+'">'+
+           'data-sn="'+esc(nom)+'" data-e="'+ei+'" data-i="'+i+'" data-f="0" value="'+(d[0]!=null?d[0]:'')+'">'+
            '<span>×</span><input type="number" inputmode="numeric" placeholder="rep" '+
-           'data-e="'+ei+'" data-i="'+i+'" data-f="1" value="'+(d[1]!=null?d[1]:'')+'"></span>';}
-      h+='<span class="stp"><button data-ms="'+ei+'" title="Retirer une série">−</button>'+
-         '<span>'+ns+' sér.</span><button data-as="'+ei+'" title="Ajouter une série">+</button></span>';
+           'data-sn="'+esc(nom)+'" data-e="'+ei+'" data-i="'+i+'" data-f="1" value="'+(d[1]!=null?d[1]:'')+'"></span>';}
+      h+='<span class="stp"><button data-sn="'+esc(nom)+'" data-ms="'+ei+'" title="Retirer une série">−</button>'+
+         '<span>'+ns+' sér.</span><button data-sn="'+esc(nom)+'" data-as="'+ei+'" title="Ajouter une série">+</button></span>';
       h+='</div></div>';});
     h+='</div>';
   }
   if(r.bloc.length)h+='<div class="blk">'+esc(r.bloc.join('\n'))+'</div>';
   h+='<div class="tools" style="margin-top:10px"><div class="f" style="flex:1;min-width:220px">'+
-     '<label>Ressenti / écarts</label><input type="text" id="eNote" placeholder="charges, douleurs, énergie…" value="'+
-     esc((LOG[key]._n)||'')+'"></div></div>';
-  $('jLog').innerHTML=h;
-  [].forEach.call($('jLog').querySelectorAll('.set input'),function(inp){
+     '<label>Ressenti / écarts</label><input type="text" data-note="'+esc(nom)+'" '+
+     'placeholder="charges, douleurs, énergie…" value="'+esc((LOG[key]._n)||'')+'"></div></div>';
+  return h;
+}
+function bindLog(iso){
+  var root=$('jLog');
+  [].forEach.call(root.querySelectorAll('.set input'),function(inp){
     inp.addEventListener('change',function(){
+      var nom=inp.dataset.sn,r=SBY[nom],key=lkey(iso,nom);
       var e=r.ex[+inp.dataset.e],i=+inp.dataset.i,f=+inp.dataset.f;
-      LOG[key][e.n]=LOG[key][e.n]||[];
+      LOG[key]=LOG[key]||{};LOG[key][e.n]=LOG[key][e.n]||[];
       LOG[key][e.n][i]=LOG[key][e.n][i]||[null,null];
       LOG[key][e.n][i][f]=inp.value===''?null:parseFloat(inp.value);
       saveLog();renderHist();});});
-  [].forEach.call($('jLog').querySelectorAll('[data-as]'),function(b){
-    b.onclick=function(){var e=r.ex[+b.dataset.as];
-      LOG[key][e.n]=LOG[key][e.n]||[];LOG[key][e.n].push([null,null]);saveLog();renderLog(iso);};});
-  [].forEach.call($('jLog').querySelectorAll('[data-ms]'),function(b){
-    b.onclick=function(){var e=r.ex[+b.dataset.ms],d=LOG[key][e.n];
+  [].forEach.call(root.querySelectorAll('[data-as]'),function(b){
+    b.onclick=function(){var nom=b.dataset.sn,key=lkey(iso,nom),e=SBY[nom].ex[+b.dataset.as];
+      LOG[key]=LOG[key]||{};LOG[key][e.n]=LOG[key][e.n]||[];
+      LOG[key][e.n].push([null,null]);saveLog();renderLog(iso);};});
+  [].forEach.call(root.querySelectorAll('[data-ms]'),function(b){
+    b.onclick=function(){var nom=b.dataset.sn,key=lkey(iso,nom),e=SBY[nom].ex[+b.dataset.ms];
+      var d=LOG[key]&&LOG[key][e.n];
       if(d&&d.length>1){d.pop();saveLog();renderLog(iso);}};});
-  var en=$('eNote');
-  if(en)en.addEventListener('change',function(){LOG[key]._n=en.value;saveLog();});
-  renderHist();
+  [].forEach.call(root.querySelectorAll('[data-note]'),function(inp){
+    inp.addEventListener('change',function(){var key=lkey(iso,inp.dataset.note);
+      LOG[key]=LOG[key]||{};LOG[key]._n=inp.value;saveLog();});});
 }
 function renderTrain(){var i=$('jd')&&$('jd').value;if(i)renderLog(i);}
 function renderHist(){
@@ -3281,15 +3438,22 @@ function renderHist(){
 function renderMes(){
   var iso=$('sd').value,m=MES[iso]||{};
   $('sp').value=m.p!=null?m.p:'';$('stt').value=m.t!=null?m.t:'';
-  $('sg').value=m.g!=null?m.g:'';$('ss').value=m.s!=null?m.s:'';
+  $('sg').value=m.g!=null?m.g:'';
+  var stv=getSteps(iso);$('ss').value=stv!=null?stv:'';
+  var eav=dv(iso,'ea',null);$('se').value=eav?Math.round(eav/100)/10:'';
   var ks=Object.keys(MES).filter(function(k){return MES[k].p!=null;}).sort();
   var last7=ks.slice(-7),prev7=ks.slice(-14,-7);
   var avg=function(a){return a.length?a.reduce(function(x,k){return x+MES[k].p;},0)/a.length:null;};
   var a1=avg(last7),a0=avg(prev7);
   var dw=(a1!=null&&a0!=null)?(a1-a0):null;
   var start=ks.length?MES[ks[0]].p:null,now=ks.length?MES[ks[ks.length-1]].p:null;
-  var stp=Object.keys(MES).filter(function(k){return MES[k].s!=null;}).slice(-7);
-  var astp=stp.length?Math.round(stp.reduce(function(x,k){return x+MES[k].s;},0)/stp.length):null;
+  var dk=Object.keys(DAY).sort(),last=dk.slice(-7);
+  var mean=function(f){var v=last.map(f).filter(function(x){return x!=null&&!isNaN(x);});
+    return v.length?v.reduce(function(a,b){return a+b;},0)/v.length:null;};
+  var astp=mean(function(k){return getSteps(k);});
+  if(astp!=null)astp=Math.round(astp);
+  var aea=mean(function(k){var v=dv(k,'ea',null);return v||null;});
+  var abu=mean(function(k){var v=burnTot(k);return v||null;});
   var cw=dw==null?'':(dw<=-0.4&&dw>=-1.2?'ok':(dw>-0.4&&dw<=0?'mid':'off'));
   $('sStats').innerHTML=
     st(a1!=null?(Math.round(a1*10)/10+' kg'):'—','Moyenne 7 jours')+
@@ -3297,6 +3461,8 @@ function renderMes(){
     '</span><span class="l">Variation hebdo</span></div>'+
     st((start!=null&&now!=null)?((now-start>0?'+':'')+Math.round((now-start)*10)/10+' kg'):'—','Depuis le début')+
     st(astp!=null?astp:'—','Pas / jour (7 j)')+
+    st(aea!=null?(fL(aea)+' L'):'—','Eau / jour (7 j)')+
+    st(abu!=null?Math.round(abu):'—','Dépense / jour (7 j)')+
     st(ks.length,'Pesées enregistrées');
   drawSpark(ks);
 }
@@ -3331,6 +3497,8 @@ function planMd(list,title){
   list.forEach(function(o2){
     var mm=dayMac(o2.iso),t=target(o2.w);
     o.push('## '+JOURS[o2.wd]+' '+o2.d+' '+MOIS[m]+(t.k>+$('tk').value?'  *(deload)*':''));
+    var sl=seaL(o2.iso);
+    if(sl.length)o.push('- **Entraînement** — '+sl.join(' + '));
     SLOTS.forEach(function(s){var v=slots[o2.iso+'|'+s.k];
       o.push('- **'+s.h+'** '+s.lab+' — '+(v?v+'  `'+BY[v].mac[0]+' kcal · '+BY[v].mac[1]+' g P`':'—'));});
     o.push('- Total : `'+mm[0]+'/'+t.k+' kcal · '+mm[1]+'/'+t.p+' P · '+mm[2]+'/'+t.l+' L · '+mm[3]+'/'+t.g+' G`');
@@ -3356,14 +3524,22 @@ $('mo').value=M;$('yr').value=Y;var FIRST=true;
 
 function on(i,e,f){$(i).addEventListener(e,f);}
 ['tk','tp','tl','tg'].forEach(function(i){on(i,'input',render);});
+['te','tst','tkp'].forEach(function(i){on(i,'input',function(){save();renderDay();renderMes();});});
 ['mo','yr'].forEach(function(i){on(i,'change',function(){
   var wasBoot=BOOTING;BOOTING=true;loadMonth();BOOTING=wasBoot;render();});});
 on('dw','change',render);
 on('per','change',renderCourses);
 on('pq','input',function(){pick.q=this.value;drawPick();});
 on('pX','click',closePick);
-on('pClr','click',function(){delete slots[pick.day+'|'+pick.slot];
-  if(DAY[pick.day])delete DAY[pick.day][pick.slot];
+on('pClr','click',function(){
+  if(pick.slot.indexOf('sea')===0){
+    var a=seaL(pick.day),i=pick.slot.indexOf('#')>0?+pick.slot.split('#')[1]:-1;
+    if(i>=0){if(DAY[pick.day])delete DAY[pick.day][seaKey(a[i])];a.splice(i,1);}
+    seaSet(pick.day,a);
+  }else{
+    delete slots[pick.day+'|'+pick.slot];
+    if(DAY[pick.day])delete DAY[pick.day][pick.slot];
+  }
   saveDay();closePick();render();if(dayISO()===pick.day)renderDay();});
 $('ov').addEventListener('click',function(e){if(e.target===$('ov'))closePick();});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('ov').classList.contains('on'))closePick();});
@@ -3371,7 +3547,9 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('ov').cla
   [].forEach.call(document.querySelectorAll('.tab'),function(x){x.setAttribute('aria-selected','false');});
   t.setAttribute('aria-selected','true');
   [].forEach.call(document.querySelectorAll('.panel'),function(p){p.classList.remove('on');});
-  $(t.dataset.p).classList.add('on');window.scrollTo({top:0,behavior:'smooth'});};});
+  var p=t.dataset.p;$(p).classList.add('on');
+  if(p==='su')renderMes();else if(p==='co')renderCourses();else if(p==='jr')renderDay();
+  window.scrollTo({top:0,behavior:'smooth'});};});
 on('clr','click',function(){if(confirm('Vider tout le planning du mois ?')){
   days.forEach(function(o){SLOTS.forEach(function(s){delete slots[o.iso+'|'+s.k];});});render();}});
 on('expJ','click',function(){dl('plan-'+mname()+'.json',JSON.stringify({v:2,year:+$('yr').value,
@@ -3410,13 +3588,18 @@ on('jToday','click',function(){$('jd').value=new Date().toISOString().slice(0,10
 on('sd','change',renderMes);
 on('sSave','click',function(){
   var iso=$('sd').value,g=function(i){var v=$(i).value;return v===''?null:parseFloat(v);};
-  MES[iso]={p:g('sp'),t:g('stt'),g:g('sg'),s:g('ss')};
-  if(MES[iso].p==null&&MES[iso].t==null&&MES[iso].g==null&&MES[iso].s==null)delete MES[iso];
-  saveMes();renderMes();msg('Mesures enregistrées.',true);});
+  MES[iso]={p:g('sp'),t:g('stt'),g:g('sg')};
+  if(MES[iso].p==null&&MES[iso].t==null&&MES[iso].g==null)delete MES[iso];
+  setdv(iso,'st',g('ss'));
+  var e=g('se');setdv(iso,'ea',e==null?null:Math.round(e*1000));
+  saveMes();renderMes();if(dayISO()===iso)renderDay();
+  msg('Mesures enregistrées.',true);});
 on('sExp','click',function(){
-  var ks=Object.keys(MES).sort(),o=['date;poids_kg;taille_cm;genoux_10;pas'];
-  ks.forEach(function(k){var m=MES[k];
-    o.push([k,m.p!=null?m.p:'',m.t!=null?m.t:'',m.g!=null?m.g:'',m.s!=null?m.s:''].join(';'));});
+  var set={};Object.keys(MES).forEach(function(k){set[k]=1;});Object.keys(DAY).forEach(function(k){set[k]=1;});
+  var ks=Object.keys(set).sort(),o=['date;poids_kg;taille_cm;genoux_10;pas;eau_ml;depense_kcal'];
+  ks.forEach(function(k){var m=MES[k]||{},st2=getSteps(k),ea=dv(k,'ea',null),bu=burnTot(k);
+    o.push([k,m.p!=null?m.p:'',m.t!=null?m.t:'',m.g!=null?m.g:'',
+      st2!=null?st2:'',ea||'',bu||''].join(';'));});
   dl('mesures.csv',o.join('\n'),'text/csv');});
 on('applyS','click',function(){var t=$('tas').value;lset('fdr:sea',t);loadSea(t);});
 on('loadS','click',function(){$('fS').click();});
@@ -3453,6 +3636,7 @@ if(!LS)$('svNote').className='note red';
   if(st){try{var o=JSON.parse(st);
     if(o.k)$('tk').value=o.k; if(o.p)$('tp').value=o.p;
     if(o.l)$('tl').value=o.l; if(o.g)$('tg').value=o.g;
+    if(o.e)$('te').value=o.e; if(o.st)$('tst').value=o.st; if(o.kp)$('tkp').value=o.kp;
     if(o.dw!=null)WANT_DW=String(o.dw);}catch(e){}}
   loadMonth();
   try{LOG=JSON.parse(lget('fdr:log')||'{}')||{};}catch(e){LOG={};}

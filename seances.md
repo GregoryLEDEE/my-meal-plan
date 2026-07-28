@@ -12,6 +12,7 @@
     type      muscu | nage | marche | repos
     jour      jour de semaine conseillé (1 = lundi … 7 = dimanche)
     duree     en minutes
+    depense   dépense estimée en kcal — indicative, à ±25 %
     note      une ligne libre
 
   EXERCICES (type muscu) — un par ligne, quatre champs :
@@ -33,6 +34,7 @@
 type: muscu
 jour: 1
 duree: 70
+depense: 420
 note: Dominante hanche. Amplitude plafonnée à 90° sur tout ce qui plie le genou.
 exercices:
 - Presse à cuisses, pieds hauts et larges | 4 | 8-10 | Arrêt net à 90°. Pieds hauts sur la plateforme : le travail part vers fessiers et ischios, l'angle du genou s'ouvre.
@@ -47,6 +49,7 @@ exercices:
 type: muscu
 jour: 2
 duree: 60
+depense: 340
 note: RPE 7-8 sur les mouvements principaux, 8-9 sur les accessoires.
 exercices:
 - Développé couché | 4 | 6 | Ne force pas la barre jusqu'à la poitrine si l'épaule tire : tes bras sont longs, l'amplitude complète coûte cher.
@@ -60,6 +63,7 @@ exercices:
 type: muscu
 jour: 4
 duree: 70
+depense: 430
 note: Séance de force. Repos 3 min sur le rack pull.
 exercices:
 - Rack pull (barre à hauteur sous-genou) | 4 | 5 | Le remplaçant du trap bar. Amplitude réduite : dos protégé, genoux quasi épargnés. À 2m03, supérieur au soulevé au sol.
@@ -74,6 +78,7 @@ exercices:
 type: muscu
 jour: 5
 duree: 60
+depense: 340
 note: Volume sur le dos et les épaules postérieures.
 exercices:
 - Tractions assistées ou tirage prise neutre | 4 | 8 | Descente contrôlée sur 3 secondes.
@@ -87,6 +92,7 @@ exercices:
 type: nage
 jour: 3
 duree: 45
+depense: 700
 note: Test simple — tu dois tenir la même vitesse au 1 800ᵉ mètre qu'au 100ᵉ.
 bloc:
 400 m échauffement, crawl souple
@@ -97,6 +103,7 @@ bloc:
 type: nage
 jour: 5
 duree: 45
+depense: 750
 note: Brasse à éviter — le ciseau agresse le genou.
 bloc:
 400 m échauffement
@@ -109,6 +116,7 @@ bloc:
 type: nage
 jour: 6
 duree: 40
+depense: 600
 note: La séance la plus facile des trois. Progression : +100 à 200 m par semaine.
 bloc:
 400 m échauffement
@@ -120,6 +128,7 @@ bloc:
 type: marche
 jour: 6
 duree: 40
+depense: 350
 note: Selle réglée haute sur le vélo : ça réduit l'angle de flexion du genou. Zone 2 = 110-128 bpm.
 bloc:
 5 min d'échauffement progressif
@@ -130,6 +139,7 @@ bloc:
 type: marche
 jour: 7
 duree: 60
+depense: 330
 note: Allure libre. Bonnes chaussures : à 160 kg l'amorti change la fatigue de fin de journée.
 bloc:
 60 min de marche continue, terrain plat
@@ -138,4 +148,5 @@ bloc:
 type: repos
 jour: 7
 duree: 0
+depense: 0
 note: Repos complet. C'est pendant les jours de repos que le muscle se construit, pas à la salle.

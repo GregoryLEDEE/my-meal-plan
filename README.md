@@ -6,8 +6,8 @@ Application d'une seule page, sans build ni dépendance. Six onglets :
   geste, ajustement des portions, journal des charges intégré, bilan prévu / réalisé / cible
 - **Mois** — le calendrier réel : composition du planning, macros par jour, récapitulatif par semaine
 - **Courses** — liste quantifiée par rayon, filtrable par semaine, avec indicateurs d'optimisation
-- **Suivi** — poids, tour de taille, genoux, pas ; courbe avec moyenne mobile sur 7 jours,
-  plus l'historique des séances et leur tonnage
+- **Suivi** — poids, tour de taille, genoux, pas, eau, dépense ; courbe avec moyenne mobile
+  sur 7 jours, plus l'historique des séances et leur tonnage
 - **Programme** — repères, règles et ajustements
 - **Catalogue** — les deux fichiers source, éditables directement
 
@@ -50,6 +50,26 @@ C'est l'écran principal, celui qu'on garde ouvert dans la journée.
   validé, portions comprises) et **cible**. Seule la ligne *réalisé* est colorée.
 - Pour une séance de musculation, le journal des charges s'affiche directement en dessous,
   avec le rappel de la dernière fois pour chaque exercice et de quoi ajouter ou retirer une série.
+- **Plusieurs séances par jour** sont possibles : le vendredi du programme cumule B2 et Nage 2.
+  Le bouton *＋ Ajouter une séance* les empile, chacune avec sa propre validation et son
+  propre journal.
+
+### Dépense et hydratation
+
+Trois jauges sous le bilan :
+
+- **Eau** — boutons `+25 cl`, `+50 cl`, `+1 L`. Cible par défaut 4,5 L/jour.
+- **Pas** — saisie manuelle, cible par défaut 9 000.
+- **Dépense estimée** — somme des séances **validées** (champ `depense` de `seances.md`)
+  et des pas (réglage *kcal / 1 000 pas*, 60 par défaut à 160 kg). Un champ permet de
+  saisir le relevé d'une montre, qui remplace alors l'estimation.
+
+> **Cette dépense ne s'ajoute pas à ce que tu manges.** L'entraînement est déjà compté
+> dans la cible de 3 300 kcal — elle a été calculée à partir de lui. Manger en plus
+> reviendrait à le compter deux fois et annulerait le déficit.
+
+Les estimations de dépense sont fiables à ±25 % au mieux, montres connectées comprises.
+Elles servent à comparer une semaine à l'autre, pas à piloter l'alimentation.
 
 Changer de jour dans cette vue aligne automatiquement le mois affiché dans l'onglet *Mois*.
 
@@ -70,6 +90,7 @@ hors ligne — utile en magasin quand le réseau est mauvais.
 type: muscu          # muscu | nage | marche | repos
 jour: 1              # 1 = lundi … 7 = dimanche
 duree: 70
+depense: 420          # kcal estimées, indicatif
 note: Amplitude plafonnée à 90°.
 exercices:
 - Presse à cuisses | 4 | 8-10 | Arrêt net à 90°.
