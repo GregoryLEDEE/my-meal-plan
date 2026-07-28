@@ -61,6 +61,35 @@ border-radius:var(--r);padding:10px 15px;font-size:.85rem;font-weight:600;min-he
 .note.red{border-color:var(--alert);background:var(--alert-soft)}
 .note h4{margin-bottom:3px;font-size:.93rem}
 .note p+p{margin-top:7px}
+.sea{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:var(--aqua-soft);
+border:1px solid var(--lane);border-radius:var(--r);padding:8px 10px;cursor:pointer;margin-bottom:9px;min-height:40px}
+.sea:hover{border-color:var(--aqua)}
+.sea.empty{background:var(--panel)}
+.sea.rest{background:var(--tile)}
+.sea .t{font-size:1rem;flex:0 0 auto;line-height:1}
+.sea .n{flex:1;font-size:.82rem;font-weight:600;line-height:1.25}
+.sea.empty .n{font-weight:400;color:var(--ink3);font-style:italic}
+.sea .d{font-family:"JetBrains Mono",monospace;font-size:.66rem;color:var(--ink3)}
+.exr{border-bottom:1px solid var(--lane);padding:12px 0}
+.exr:last-child{border-bottom:0}
+.exh{display:flex;justify-content:space-between;gap:9px;align-items:baseline;margin-bottom:3px}
+.exh b{font-size:.92rem;font-weight:600}
+.exh .p{font-family:"JetBrains Mono",monospace;font-size:.7rem;color:var(--ink3);white-space:nowrap}
+.exn{font-size:.79rem;color:var(--ink2);line-height:1.45;margin-bottom:7px}
+.prev{font-family:"JetBrains Mono",monospace;font-size:.72rem;color:var(--aqua);margin-bottom:7px}
+.prev.none{color:var(--ink3)}
+.sets{display:flex;gap:6px;flex-wrap:wrap}
+.set{display:flex;align-items:center;gap:3px;background:var(--tile);border:1px solid var(--lane);
+border-radius:var(--r);padding:3px 5px}
+.set input{width:52px;min-height:34px;padding:4px 5px;font-size:.8rem;text-align:center;
+font-family:"JetBrains Mono",monospace;border:0;background:var(--panel);border-radius:3px}
+.set span{font-family:"JetBrains Mono",monospace;font-size:.66rem;color:var(--ink3)}
+.blk{background:var(--ink);color:#DCEAEA;border-radius:var(--r);padding:14px 16px;
+font-family:"JetBrains Mono",monospace;font-size:.83rem;line-height:1.85;white-space:pre-line}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px}
+.spark{width:100%;height:130px;display:block}
+.lg{display:flex;gap:14px;flex-wrap:wrap;font-size:.74rem;color:var(--ink2);margin-top:6px}
+.lg i{display:inline-block;width:16px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
 .wsum{display:grid;grid-template-columns:repeat(auto-fit,minmax(116px,1fr));gap:6px;margin:0 0 12px}
 .ws{background:var(--panel);border:1px solid var(--lane);border-left:3px solid var(--lane);border-radius:var(--r);padding:8px 10px}
 .ws .n{font-family:"JetBrains Mono",monospace;font-size:1.02rem;font-weight:600;line-height:1}
@@ -180,7 +209,9 @@ body{background:#fff;font-size:10pt}.days{grid-template-columns:repeat(2,1fr)}.d
 <nav><div class="tabs" role="tablist">
 <button class="tab" role="tab" aria-selected="true" data-p="pl">Planning</button>
 <button class="tab" role="tab" aria-selected="false" data-p="co">Courses</button>
-<button class="tab" role="tab" aria-selected="false" data-p="op">Optimiser</button>
+<button class="tab" role="tab" aria-selected="false" data-p="en">Entraînement</button>
+<button class="tab" role="tab" aria-selected="false" data-p="su">Suivi</button>
+<button class="tab" role="tab" aria-selected="false" data-p="op">Programme</button>
 <button class="tab" role="tab" aria-selected="false" data-p="ca">Catalogue</button>
 </div></nav>
 
@@ -237,6 +268,53 @@ body{background:#fff;font-size:10pt}.days{grid-template-columns:repeat(2,1fr)}.d
   </section>
 </div>
 
+<!-- ============ ENTRAINEMENT ============ -->
+<div class="panel" id="en">
+  <section>
+    <div class="card"><div class="tools">
+      <div class="f"><label>Date</label><input type="date" id="ed"></div>
+      <button class="btn ghost sm" id="ePrev">← Jour précédent</button>
+      <button class="btn ghost sm" id="eNext">Jour suivant →</button>
+      <button class="btn ghost sm" id="eToday">Aujourd'hui</button>
+    </div></div>
+  </section>
+  <section id="eBody"></section>
+  <section>
+    <div class="eyebrow">Historique</div><h2>Dernières séances enregistrées</h2>
+    <div id="eHist" style="margin-top:10px"></div>
+  </section>
+</div>
+
+<!-- ============ SUIVI ============ -->
+<div class="panel" id="su">
+  <section>
+    <div class="eyebrow">Mesures du jour</div><h2>Ce qu'on note, et à quelle fréquence</h2>
+    <p class="lede" style="margin:6px 0 12px">Le poids chaque matin à jeun — mais <b>seule la moyenne hebdomadaire compte</b>. Le chiffre du jour ne veut rien dire : eau, sel, transit.</p>
+    <div class="card"><div class="tools">
+      <div class="f"><label>Date</label><input type="date" id="sd"></div>
+      <div class="f"><label>Poids (kg)</label><input type="number" id="sp" step="0.1" placeholder="—"></div>
+      <div class="f"><label>Tour de taille (cm)</label><input type="number" id="stt" step="0.5" placeholder="—"></div>
+      <div class="f"><label>Genoux /10</label><input type="number" id="sg" min="0" max="10" step="1" placeholder="—"></div>
+      <div class="f"><label>Pas</label><input type="number" id="ss" step="500" placeholder="—"></div>
+      <button class="btn" id="sSave">Enregistrer</button>
+    </div></div>
+  </section>
+  <section class="sum" id="sStats"></section>
+  <section>
+    <div class="eyebrow">Courbe</div><h2>Poids et moyenne mobile</h2>
+    <div class="card" style="margin-top:10px"><div id="sChart"></div>
+      <div class="lg"><span><i style="background:var(--lane)"></i>Pesée quotidienne</span>
+      <span><i style="background:var(--aqua)"></i>Moyenne sur 7 jours</span></div></div>
+  </section>
+  <section>
+    <div class="note"><h4>Comment lire la courbe</h4>
+      <p>La ligne claire va monter et descendre de 1 à 2 kg d'un jour à l'autre : c'est du bruit, ignore-le. Seule la ligne turquoise compte. Si elle descend de 0,5 à 0,9 kg par semaine, ne change rien.</p></div>
+    <div class="tools" style="margin-top:12px">
+      <button class="btn ghost sm" id="sExp">Exporter les mesures (.csv)</button>
+    </div>
+  </section>
+</div>
+
 <!-- ============ OPTIMISER ============ -->
 <div class="panel" id="op">
   <section>
@@ -262,6 +340,29 @@ body{background:#fff;font-size:10pt}.days{grid-template-columns:repeat(2,1fr)}.d
       <p>Le shaker et la collation, eux, gagnent à être <b>identiques toute la semaine</b> : ce sont les créneaux où la routine ne pèse pas, et où la variété ne rapporte rien.</p></div>
     <div class="note gold" style="margin-top:12px"><h4>Poids cuit, poids acheté</h4>
       <p>Les grammages du catalogue sont en <b>poids cuit</b> pour les viandes et poissons. À l'achat, compte <b>+30 %</b> : 540 g de poulet cuit dans la liste, c'est environ 700 g de poulet cru dans le caddie.</p></div>
+  </section>
+  <section>
+    <div class="eyebrow">Repères</div><h2>Le programme en une page</h2>
+    <div class="sum" style="margin-top:10px">
+      <div class="st"><span class="n">3 300</span><span class="l">kcal / jour · déficit ~650</span></div>
+      <div class="st"><span class="n">230 g</span><span class="l">Protéines · 4 prises</span></div>
+      <div class="st"><span class="n">~0,7 kg</span><span class="l">Perte / semaine</span></div>
+      <div class="st"><span class="n">90°</span><span class="l">Flexion genou maximum</span></div>
+    </div>
+    <div class="note" style="margin-top:12px"><h4>Les cinq leviers</h4>
+      <p><b>1.</b> 230 g de protéines par jour, en 4 prises — le levier n°1 de préservation musculaire.<br>
+      <b>2.</b> Garder tes charges à la barre. Poids qui baisse + développé couché qui tient = tu perds du gras. C'est le seul test qui vaille, et c'est ce que mesure l'onglet Entraînement.<br>
+      <b>3.</b> La piscine est ton avantage : trois séances, crawl et dos, brasse au minimum.<br>
+      <b>4.</b> 90° de flexion, jamais plus. Cette seule règle protège tes genoux mieux que tout le reste réuni.<br>
+      <b>5.</b> Prendre la semaine de deload au sérieux : c'est ce qui transforme quatre semaines en douze mois.</p></div>
+    <div class="note red" style="margin-top:12px"><h4>Hors du programme</h4>
+      <p>Squat libre · Hack squat · Fentes bulgares · Step-ups · Course à pied · Rameur. Le rameur surprend : c'est une flexion de genou sous charge répétée des centaines de fois par séance.</p></div>
+    <div class="note gold" style="margin-top:12px"><h4>Ajustements — sur deux semaines de données, jamais trois jours</h4>
+      <p>Perte &lt; 0,4 kg/sem → −200 kcal ou +1 séance de natation.<br>
+      Perte 0,5 à 0,9 kg/sem → <b>ne change rien</b>, zone idéale.<br>
+      Perte &gt; 1,2 kg/sem → +200 kcal, tu perds probablement du muscle.<br>
+      Poids stable mais tour de taille qui baisse → <b>ne change rien</b>, recomposition en cours.</p>
+      <p><b>Signaux d'un déficit trop agressif :</b> chute de force &gt; 10 %, FC au repos +5 bpm installée, sommeil dégradé, faim envahissante. Deux signaux ou plus → une semaine complète au maintien (~3 700 kcal), puis reprendre.</p></div>
   </section>
   <section>
     <div class="eyebrow">Catalogue</div><h2>Ajouter tes propres recettes</h2>
@@ -300,6 +401,18 @@ ingredients:
       « Catalogue d'origine » efface la version locale et recharge celle du dépôt.</p></div>
     <div id="msg"></div>
     <textarea id="ta" spellcheck="false"></textarea>
+  </section>
+  <section>
+    <div class="eyebrow">Source</div><h2>Les séances</h2>
+    <p class="lede">Même principe : un bloc par séance, exercices en <code>nom | séries | reps | consigne</code>.</p>
+    <div class="tools" style="margin:12px 0">
+      <button class="btn" id="applyS">Appliquer</button>
+      <button class="btn ghost sm" id="loadS">Charger un .md</button>
+      <input type="file" id="fS" accept=".md,.txt,.markdown" hidden>
+      <button class="btn ghost sm" id="dlS">Télécharger</button>
+      <button class="btn danger sm" id="rstS">Séances d'origine</button>
+    </div>
+    <textarea id="tas" spellcheck="false" style="min-height:300px"></textarea>
   </section>
 </div>
 
@@ -2344,6 +2457,148 @@ ingredients:
 - 1 |  | c. à c. de cannelle | epicerie
 - 10 | g | noix concassées | epicerie
 </script>
+<script id="seances" type="text/plain"># Catalogue de séances
+
+<!--
+==================================================================
+  MODE D'EMPLOI — source des séances d'entraînement.
+  Éditable dans n'importe quel éditeur, rechargeable dans l'onglet
+  "Catalogue" de l'application.
+
+  UNE SÉANCE = un bloc commençant par "## Nom de la séance"
+
+  Champs :
+    type      muscu | nage | marche | repos
+    jour      jour de semaine conseillé (1 = lundi … 7 = dimanche)
+    duree     en minutes
+    note      une ligne libre
+
+  EXERCICES (type muscu) — un par ligne, quatre champs :
+        - nom | séries | répétitions | consigne
+
+    Les séries et répétitions sont indicatives : c'est le journal
+    qui enregistre ce que tu as réellement fait.
+
+  BLOC (type nage) — texte libre, une ligne par élément :
+    bloc:
+    400 m échauffement
+    8 × 50 m rapide, 30 s de repos
+
+  Le nom sert d'identifiant : il doit être unique.
+==================================================================
+-->
+
+## A1 — Bas du corps
+type: muscu
+jour: 1
+duree: 70
+note: Dominante hanche. Amplitude plafonnée à 90° sur tout ce qui plie le genou.
+exercices:
+- Presse à cuisses, pieds hauts et larges | 4 | 8-10 | Arrêt net à 90°. Pieds hauts sur la plateforme : le travail part vers fessiers et ischios, l'angle du genou s'ouvre.
+- Romanian deadlift | 3 | 8 | Genoux quasi tendus, barre qui longe les cuisses. L'exercice roi dans ton cas.
+- Hip thrust / Glute Drive | 3 | 12 | Si le club a la machine ; sinon barre sur banc avec un coussin.
+- Leg curl assis | 3 | 12 | Tempo contrôlé, pas d'à-coups.
+- Extension lombaire (banc 45°) | 3 | 12 | Ajoute un disque contre la poitrine dès que ça devient facile.
+- Mollets à la presse | 4 | 15 | Amplitude complète, pause en bas.
+- Wall sit (isométrie, 60° max) | 3 | 45 s | Effet antalgique documenté sur le genou. C'est l'exercice qu'on saute et qu'il ne faut pas sauter.
+
+## A2 — Haut du corps, poussée
+type: muscu
+jour: 2
+duree: 60
+note: RPE 7-8 sur les mouvements principaux, 8-9 sur les accessoires.
+exercices:
+- Développé couché | 4 | 6 | Ne force pas la barre jusqu'à la poitrine si l'épaule tire : tes bras sont longs, l'amplitude complète coûte cher.
+- Développé militaire assis | 3 | 8-10 | Passe au Smith si les haltères plafonnent trop bas.
+- Tirage vertical prise large | 3 | 10 | Poitrine haute, on tire avec les coudes.
+- Rowing haltère unilatéral | 3 | 10 | Dos à plat, pas de rotation du buste.
+- Élévations latérales à la poulie | 3 | 15 | Charge légère, aucun élan.
+- Extensions triceps à la corde | 3 | 12-15 | Coudes fixes le long du corps.
+
+## B1 — Bas du corps, chaîne postérieure
+type: muscu
+jour: 4
+duree: 70
+note: Séance de force. Repos 3 min sur le rack pull.
+exercices:
+- Rack pull (barre à hauteur sous-genou) | 4 | 5 | Le remplaçant du trap bar. Amplitude réduite : dos protégé, genoux quasi épargnés. À 2m03, supérieur au soulevé au sol.
+- Presse à cuisses unilatérale | 3 | 10 par jambe | Même plafond : 90°, jamais plus.
+- Leg curl allongé | 3 | 12 | Bassin plaqué, pas de cambrure.
+- Abducteurs machine | 3 | 15 | Le fessier moyen stabilise le genou. Sous-estimé, très utile ici.
+- Leg extension, amplitude haute uniquement | 3 | 15 | Départ à 45° de flexion, jusqu'à l'extension. Charge modérée.
+- Mollets assis | 4 | 15 | Cible le soléaire, complémentaire des mollets debout.
+- Relevés de jambes suspendu | 3 | 12 | Sans balancier.
+
+## B2 — Haut du corps, tirage
+type: muscu
+jour: 5
+duree: 60
+note: Volume sur le dos et les épaules postérieures.
+exercices:
+- Tractions assistées ou tirage prise neutre | 4 | 8 | Descente contrôlée sur 3 secondes.
+- Développé incliné haltères | 3 | 10 | Banc à 30°, pas plus : au-delà l'épaule travaille seule.
+- Rowing assis à la poulie | 3 | 10 | Omoplates serrées en fin de course.
+- Développé épaules machine | 3 | 12 | Après le tirage, la fatigue est normale.
+- Curl biceps incliné | 3 | 12 | Bras en arrière du buste, étirement complet.
+- Face pull | 3 | 15 | Le meilleur exercice de santé d'épaule qui existe.
+
+## Nage 1 — Aérobie continue
+type: nage
+jour: 3
+duree: 45
+note: Test simple — tu dois tenir la même vitesse au 1 800ᵉ mètre qu'au 100ᵉ.
+bloc:
+400 m échauffement, crawl souple
+1 800 m crawl continu, allure régulière tenable
+200 m dos crawlé, retour au calme
+
+## Nage 2 — Intervalles
+type: nage
+jour: 5
+duree: 45
+note: Brasse à éviter — le ciseau agresse le genou.
+bloc:
+400 m échauffement
+6 × 100 m crawl, départ toutes les 2'00 (25-30 s de repos)
+100 m souple
+6 × 50 m crawl rapide, 30 s de repos
+200 m dos crawlé, retour au calme
+
+## Nage 3 — Volume mixte
+type: nage
+jour: 6
+duree: 40
+note: La séance la plus facile des trois. Progression : +100 à 200 m par semaine.
+bloc:
+400 m échauffement
+5 × 200 m alternance crawl / dos crawlé, 30 s de repos
+300 m pull buoy (jambes au repos total)
+200 m retour au calme
+
+## Zone 2 — Vélo ou elliptique
+type: marche
+jour: 6
+duree: 40
+note: Selle réglée haute sur le vélo : ça réduit l'angle de flexion du genou. Zone 2 = 110-128 bpm.
+bloc:
+5 min d'échauffement progressif
+30 min en allure conversationnelle
+5 min de retour au calme
+
+## Marche longue
+type: marche
+jour: 7
+duree: 60
+note: Allure libre. Bonnes chaussures : à 160 kg l'amorti change la fatigue de fin de journée.
+bloc:
+60 min de marche continue, terrain plat
+
+## Repos
+type: repos
+jour: 7
+duree: 0
+note: Repos complet. C'est pendant les jours de repos que le muscle se construit, pas à la salle.
+</script>
 <script>
 (function(){
 "use strict";
@@ -2365,6 +2620,10 @@ var JOURS=['dimanche','lundi','mardi','mercredi','jeudi','vendredi','samedi'];
 var JS=['dim','lun','mar','mer','jeu','ven','sam'];
 var TOL={k:[150,350],p:[15,35],l:[12,25],g:[30,70]};
 
+var SORIG=document.getElementById('seances').textContent;
+var SEA=[],SBY={},LOG={},MES={};
+var SICO={muscu:'\u25C6',nage:'\u3030',marche:'\u25B3',repos:'\u25CB'};
+var STYP={muscu:'Musculation',nage:'Natation',marche:'Cardio & marche',repos:'Repos'};
 var CAT=[],BY={},slots={},weeks=[],days=[];
 var LS=false;
 try{localStorage.setItem('fdr:t','1');localStorage.removeItem('fdr:t');LS=true;}catch(e){}
@@ -2420,6 +2679,34 @@ function parseMd(txt){
     r._ing=r.ings.map(function(g){return nrm(g.n);});
   });
   return {list:out,errs:errs};
+}
+function parseSea(txt){
+  var out=[],cur=null,mode='',L=txt.split(/\r?\n/);
+  for(var i=0;i<L.length;i++){
+    var line=L[i],m;
+    if(/^\s*<!--/.test(line)){while(i<L.length&&L[i].indexOf('-->')<0)i++;continue;}
+    if((m=line.match(/^##\s+(.+?)\s*$/))){cur={nom:m[1],type:'muscu',jour:null,duree:null,
+      note:'',ex:[],bloc:[]};out.push(cur);mode='';continue;}
+    if(!cur)continue;
+    if(/^exercices\s*:/.test(line)){mode='ex';continue;}
+    if(/^bloc\s*:/.test(line)){mode='bloc';continue;}
+    if(mode==='ex'&&(m=line.match(/^-\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*\|\s*(.*?)\s*$/))){
+      cur.ex.push({n:m[1],s:parseInt(m[2],10)||3,r:m[3],c:m[4]});continue;}
+    if(mode==='bloc'&&line.trim()&&line.indexOf(':')<0){cur.bloc.push(line.trim());continue;}
+    if((m=line.match(/^([A-Za-z]+)\s*:\s*(.*)$/))){
+      var k=m[1].toLowerCase(),v=m[2].trim();
+      if(k==='type')cur.type=v;else if(k==='note')cur.note=v;
+      else if(k==='jour')cur.jour=parseInt(v,10)||null;
+      else if(k==='duree')cur.duree=parseInt(v,10)||null;}
+  }
+  return out;
+}
+function loadSea(txt,silent){
+  var l=parseSea(txt);
+  if(!l.length){if(!silent)msg('Aucune séance trouvée : chaque séance doit commencer par "## ".',false);return;}
+  SEA=l;SBY={};SEA.forEach(function(r){SBY[r.nom]=r;});
+  render();renderTrain();
+  if(!silent)msg(SEA.length+' séances chargées.',true);
 }
 function loadCat(txt,silent){
   var p=parseMd(txt);
@@ -2483,6 +2770,10 @@ function render(){
          JS[o.wd]+' '+o.d+' <em>'+MOIS[+$('mo').value].slice(0,4)+'.</em></span><span class="dacts">'+
          '<button class="ico" data-cp="'+o.iso+'" title="Copier la veille">⧉</button>'+
          '<button class="ico" data-vd="'+o.iso+'" title="Vider le jour">×</button></span></div>';
+      var sv=slots[o.iso+'|sea'],sr=SBY[sv];
+      h+='<button class="sea'+(sr?(sr.type==='repos'?' rest':''):' empty')+'" data-d="'+o.iso+'" data-s="sea">'+
+         '<span class="t">'+(sr?SICO[sr.type]||'●':'＋')+'</span><span class="n">'+
+         (sr?esc(sr.nom):'Séance…')+'</span><span class="d">'+(sr&&sr.duree?sr.duree+' min':'')+'</span></button>';
       SLOTS.forEach(function(s){
         var v=slots[o.iso+'|'+s.k],r=BY[v];
         h+='<button class="slot" data-d="'+o.iso+'" data-s="'+s.k+'">'+
@@ -2575,7 +2866,7 @@ function openPick(iso,sk){
   pick.day=iso;pick.slot=sk;pick.q='';pick.fil='';
   $('pq').value='';
   var o=days.filter(function(x){return x.iso===iso;})[0];
-  var s=SLOTS.filter(function(x){return x.k===sk;})[0];
+  var s=(sk==='sea')?{lab:'Séance',h:'entraînement'}:SLOTS.filter(function(x){return x.k===sk;})[0];
   $('pTitle').firstChild.textContent=s.lab;
   $('pSub').textContent=JOURS[o.wd]+' '+o.d+' '+MOIS[+$('mo').value]+' · '+s.h;
   var fl=[['','Tout'],['reuse','♻ Réutilise mes ingrédients'],['t15','≤ 15 min'],['n1','Facile']];
@@ -2588,6 +2879,7 @@ function openPick(iso,sk){
 }
 function closePick(){$('ov').classList.remove('on');document.body.style.overflow='';}
 function drawPick(){
+  if(pick.slot==='sea')return drawSea();
   var s=SLOTS.filter(function(x){return x.k===pick.slot;})[0];
   var cur=slots[pick.day+'|'+pick.slot];
   var wi=weekIngs(weekOf(pick.day),pick.day,pick.slot);
@@ -2618,6 +2910,28 @@ function drawPick(){
   }
   [].forEach.call($('pList').querySelectorAll('.pr'),function(e){
     e.onclick=function(){slots[pick.day+'|'+pick.slot]=e.dataset.n;closePick();render();};});
+  $('pList').scrollTop=0;
+}
+function drawSea(){
+  var cur=slots[pick.day+'|sea'],q=nrm(pick.q.trim());
+  $('pFil').innerHTML='';
+  var g={},ord=[];
+  SEA.forEach(function(r){
+    if(q&&nrm(r.nom+' '+r.note+' '+r.ex.map(function(e){return e.n;}).join(' ')).indexOf(q)<0)return;
+    var lab=STYP[r.type]||r.type;if(!g[lab]){g[lab]=[];ord.push(lab);}g[lab].push(r);});
+  var h='';
+  ord.forEach(function(lab){
+    h+='<div class="pgrp">'+esc(lab)+' · '+g[lab].length+'</div>';
+    g[lab].forEach(function(r){
+      var det=r.ex.length? r.ex.length+' exercices' : (r.bloc.length? r.bloc.length+' blocs':'');
+      h+='<div class="pr'+(cur===r.nom?' cur':'')+'" tabindex="0" data-n="'+esc(r.nom)+'">'+
+        '<div class="pr-h"><h4>'+SICO[r.type]+' '+esc(r.nom)+'</h4><span class="pr-m">'+
+        (r.duree?r.duree+' min':'')+'</span></div>'+
+        (det?'<div class="pr-t">'+det+'</div>':'')+
+        (r.note?'<div class="pr-i">'+esc(r.note)+'</div>':'')+'</div>';});});
+  $('pList').innerHTML=h||'<p class="lede" style="padding:24px 4px">Aucune séance ne correspond.</p>';
+  [].forEach.call($('pList').querySelectorAll('.pr'),function(e){
+    e.onclick=function(){slots[pick.day+'|sea']=e.dataset.n;closePick();render();renderTrain();};});
   $('pList').scrollTop=0;
 }
 function card(r,cur){
@@ -2688,6 +3002,131 @@ function renderCourses(){
     ks.map(function(k){return '<tr><td><b>'+esc(k)+'</b></td><td class="num">'+c[k]+'</td><td class="num">'+
       BY[k].mac[0]+'</td><td class="num">'+BY[k].mac[1]+' g</td></tr>';}).join('')+'</table></div>'
     :'<div class="note"><p>Le récapitulatif apparaîtra dès que le planning contiendra des recettes.</p></div>';
+}
+
+/* ---------- journal d'entraînement ---------- */
+function lkey(iso,nom){return iso+'|'+nom;}
+function saveLog(){lset('fdr:log',JSON.stringify(LOG));flash();}
+function saveMes(){lset('fdr:mes',JSON.stringify(MES));flash();}
+function prevSets(iso,exn){
+  var best=null;
+  Object.keys(LOG).forEach(function(k){
+    var p=k.split('|'),d=p[0];
+    if(d>=iso)return;
+    var e=LOG[k]&&LOG[k][exn];
+    if(!e||!e.length)return;
+    if(!best||d>best.d)best={d:d,sets:e};});
+  return best;
+}
+function fdate(iso){var p=iso.split('-');return p[2]+'/'+p[1];}
+function renderTrain(){
+  var iso=$('ed').value;if(!iso)return;
+  var nom=slots[iso+'|sea'],r=SBY[nom],h='';
+  var dt=new Date(iso+'T12:00:00');
+  h+='<div class="wkhead"><h3>'+JOURS[dt.getDay()].charAt(0).toUpperCase()+JOURS[dt.getDay()].slice(1)+
+     ' '+dt.getDate()+' '+MOIS[dt.getMonth()]+'</h3><span class="sub">'+
+     (r?SICO[r.type]+' '+esc(r.nom):'aucune séance planifiée')+'</span></div>';
+  if(!r){
+    h+='<div class="note"><h4>Rien de prévu ce jour-là</h4><p>Assigne une séance depuis l\'onglet Planning : tape sur la bande en haut de la carte du jour. Les séances viennent de <code>seances.md</code> et sont modifiables comme les recettes.</p></div>';
+    $('eBody').innerHTML=h;renderHist();return;}
+  if(r.note)h+='<div class="note" style="margin-bottom:12px"><p>'+esc(r.note)+'</p></div>';
+  if(r.type==='repos'){
+    h+='<div class="note gold"><h4>Repos complet</h4><p>'+esc(r.note||'')+'</p></div>';
+    $('eBody').innerHTML=h;renderHist();return;}
+  var key=lkey(iso,r.nom);LOG[key]=LOG[key]||{};
+  if(r.ex.length){
+    h+='<div class="card">';
+    r.ex.forEach(function(e,ei){
+      var done=LOG[key][e.n]||[],pv=prevSets(iso,e.n);
+      h+='<div class="exr"><div class="exh"><b>'+esc(e.n)+'</b><span class="p">'+e.s+' × '+esc(e.r)+'</span></div>';
+      if(e.c)h+='<div class="exn">'+esc(e.c)+'</div>';
+      h+= pv? '<div class="prev">Dernière fois ('+fdate(pv.d)+') : '+pv.sets.map(function(x){
+              return (x[0]||'—')+' kg × '+(x[1]||'—');}).join('  ·  ')+'</div>'
+            : '<div class="prev none">Première fois sur cet exercice</div>';
+      h+='<div class="sets">';
+      for(var i=0;i<e.s;i++){
+        var d=done[i]||[];
+        h+='<span class="set"><input type="number" inputmode="decimal" step="0.5" placeholder="kg" '+
+           'data-e="'+ei+'" data-i="'+i+'" data-f="0" value="'+(d[0]!=null?d[0]:'')+'">'+
+           '<span>×</span><input type="number" inputmode="numeric" placeholder="rep" '+
+           'data-e="'+ei+'" data-i="'+i+'" data-f="1" value="'+(d[1]!=null?d[1]:'')+'"></span>';}
+      h+='</div></div>';});
+    h+='</div>';
+  }
+  if(r.bloc.length)h+='<div class="blk">'+esc(r.bloc.join('\n'))+'</div>';
+  h+='<div class="tools" style="margin-top:12px"><div class="f" style="flex:1;min-width:220px">'+
+     '<label>Ressenti / notes</label><input type="text" id="eNote" placeholder="charges, douleurs, énergie…" value="'+
+     esc((LOG[key]._n)||'')+'"></div></div>';
+  $('eBody').innerHTML=h;
+  [].forEach.call($('eBody').querySelectorAll('.set input'),function(inp){
+    inp.addEventListener('change',function(){
+      var e=r.ex[+inp.dataset.e],i=+inp.dataset.i,f=+inp.dataset.f;
+      LOG[key][e.n]=LOG[key][e.n]||[];
+      LOG[key][e.n][i]=LOG[key][e.n][i]||[null,null];
+      LOG[key][e.n][i][f]=inp.value===''?null:parseFloat(inp.value);
+      saveLog();});});
+  var en=$('eNote');
+  if(en)en.addEventListener('change',function(){LOG[key]._n=en.value;saveLog();});
+  renderHist();
+}
+function renderHist(){
+  var ks=Object.keys(LOG).filter(function(k){
+    var o=LOG[k];return Object.keys(o).filter(function(x){return x!=='_n';}).length;});
+  ks.sort().reverse();
+  if(!ks.length){$('eHist').innerHTML='<div class="note"><p>Aucune séance enregistrée pour l\'instant. Les charges saisies apparaîtront ici, et serviront de référence à la séance suivante.</p></div>';return;}
+  var h='<div class="scroll"><table class="simple"><tr><th>Date</th><th>Séance</th><th class="num">Exercices</th><th class="num">Volume</th></tr>';
+  ks.slice(0,14).forEach(function(k){
+    var p=k.split('|'),o=LOG[k],n=0,vol=0;
+    Object.keys(o).forEach(function(e){
+      if(e==='_n')return;n++;
+      o[e].forEach(function(x){if(x&&x[0]&&x[1])vol+=x[0]*x[1];});});
+    h+='<tr><td class="mono">'+fdate(p[0])+'</td><td><b>'+esc(p[1])+'</b></td>'+
+       '<td class="num">'+n+'</td><td class="num">'+(vol?Math.round(vol)+' kg':'—')+'</td></tr>';});
+  $('eHist').innerHTML=h+'</table></div>';
+}
+
+/* ---------- suivi ---------- */
+function renderMes(){
+  var iso=$('sd').value,m=MES[iso]||{};
+  $('sp').value=m.p!=null?m.p:'';$('stt').value=m.t!=null?m.t:'';
+  $('sg').value=m.g!=null?m.g:'';$('ss').value=m.s!=null?m.s:'';
+  var ks=Object.keys(MES).filter(function(k){return MES[k].p!=null;}).sort();
+  var last7=ks.slice(-7),prev7=ks.slice(-14,-7);
+  var avg=function(a){return a.length?a.reduce(function(x,k){return x+MES[k].p;},0)/a.length:null;};
+  var a1=avg(last7),a0=avg(prev7);
+  var dw=(a1!=null&&a0!=null)?(a1-a0):null;
+  var start=ks.length?MES[ks[0]].p:null,now=ks.length?MES[ks[ks.length-1]].p:null;
+  var stp=Object.keys(MES).filter(function(k){return MES[k].s!=null;}).slice(-7);
+  var astp=stp.length?Math.round(stp.reduce(function(x,k){return x+MES[k].s;},0)/stp.length):null;
+  var cw=dw==null?'':(dw<=-0.4&&dw>=-1.2?'ok':(dw>-0.4&&dw<=0?'mid':'off'));
+  $('sStats').innerHTML=
+    st(a1!=null?(Math.round(a1*10)/10+' kg'):'—','Moyenne 7 jours')+
+    '<div class="st '+(cw?'':'')+'"><span class="n '+cw+'">'+(dw!=null?(dw>0?'+':'')+(Math.round(dw*100)/100)+' kg':'—')+
+    '</span><span class="l">Variation hebdo</span></div>'+
+    st((start!=null&&now!=null)?((now-start>0?'+':'')+Math.round((now-start)*10)/10+' kg'):'—','Depuis le début')+
+    st(astp!=null?astp:'—','Pas / jour (7 j)')+
+    st(ks.length,'Pesées enregistrées');
+  drawSpark(ks);
+}
+function drawSpark(ks){
+  var box=$('sChart');
+  if(ks.length<2){box.innerHTML='<p class="lede">Il faut au moins deux pesées pour tracer une courbe.</p>';return;}
+  var W=760,H=130,P=22;
+  var vals=ks.map(function(k){return MES[k].p;});
+  var mn=Math.min.apply(null,vals),mx=Math.max.apply(null,vals);
+  if(mx-mn<1){mx+=0.5;mn-=0.5;}
+  var x=function(i){return P+i*(W-2*P)/(ks.length-1);};
+  var y=function(v){return H-P-(v-mn)/(mx-mn)*(H-2*P);};
+  var raw=vals.map(function(v,i){return (i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1);}).join(' ');
+  var ma=vals.map(function(_,i){var a=Math.max(0,i-6),sl=vals.slice(a,i+1);
+    return sl.reduce(function(s,v){return s+v;},0)/sl.length;});
+  var mp=ma.map(function(v,i){return (i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1);}).join(' ');
+  box.innerHTML='<svg class="spark" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" role="img" aria-label="Courbe de poids">'+
+    '<path d="'+raw+'" fill="none" stroke="var(--lane)" stroke-width="1.5"/>'+
+    '<path d="'+mp+'" fill="none" stroke="var(--aqua)" stroke-width="2.5" stroke-linejoin="round"/>'+
+    '<text x="2" y="12" font-size="11" fill="var(--ink3)" font-family="monospace">'+(Math.round(mx*10)/10)+'</text>'+
+    '<text x="2" y="'+(H-4)+'" font-size="11" fill="var(--ink3)" font-family="monospace">'+(Math.round(mn*10)/10)+'</text>'+
+    '</svg>';
 }
 
 /* ---------- exports ---------- */
@@ -2769,6 +3208,31 @@ on('expW','click',function(){
     planMd(list,'Fiche — '+titre)+
     '\n\n---\n\n# Liste de courses\n\n```\n'+coursesTxt()+'```\n','text/markdown');});
 on('prt','click',function(){window.print();});
+function shift(id,n){var d=new Date($(id).value+'T12:00:00');d.setDate(d.getDate()+n);
+  $(id).value=d.toISOString().slice(0,10);}
+on('ed','change',renderTrain);
+on('ePrev','click',function(){shift('ed',-1);renderTrain();});
+on('eNext','click',function(){shift('ed',1);renderTrain();});
+on('eToday','click',function(){$('ed').value=new Date().toISOString().slice(0,10);renderTrain();});
+on('sd','change',renderMes);
+on('sSave','click',function(){
+  var iso=$('sd').value,g=function(i){var v=$(i).value;return v===''?null:parseFloat(v);};
+  MES[iso]={p:g('sp'),t:g('stt'),g:g('sg'),s:g('ss')};
+  if(MES[iso].p==null&&MES[iso].t==null&&MES[iso].g==null&&MES[iso].s==null)delete MES[iso];
+  saveMes();renderMes();msg('Mesures enregistrées.',true);});
+on('sExp','click',function(){
+  var ks=Object.keys(MES).sort(),o=['date;poids_kg;taille_cm;genoux_10;pas'];
+  ks.forEach(function(k){var m=MES[k];
+    o.push([k,m.p!=null?m.p:'',m.t!=null?m.t:'',m.g!=null?m.g:'',m.s!=null?m.s:''].join(';'));});
+  dl('mesures.csv',o.join('\n'),'text/csv');});
+on('applyS','click',function(){var t=$('tas').value;lset('fdr:sea',t);loadSea(t);});
+on('loadS','click',function(){$('fS').click();});
+on('fS','change',function(e){var f=e.target.files[0];if(!f)return;var r=new FileReader();
+  r.onload=function(){$('tas').value=r.result;lset('fdr:sea',r.result);loadSea(r.result);};
+  r.readAsText(f);e.target.value='';});
+on('dlS','click',function(){dl('seances.md',$('tas').value,'text/markdown');});
+on('rstS','click',function(){ldel('fdr:sea');
+  fetchFile('seances.md',SORIG,function(t){SORIG=t;$('tas').value=t;loadSea(t);});});
 on('apply','click',function(){var t=$('ta').value;lset('fdr:cat',t);
   $('cbn').classList.add('on');loadCat(t);});
 on('loadF','click',function(){$('fM').click();});
@@ -2778,13 +3242,14 @@ on('fM','change',function(e){var f=e.target.files[0];if(!f)return;var r=new File
 on('dlM','click',function(){dl('catalogue.md',$('ta').value,'text/markdown');});
 on('rstM','click',function(){ldel('fdr:cat');$('cbn').classList.remove('on');
   fetchCat(function(t){$('ta').value=t;loadCat(t);});});
-function fetchCat(cb){
+function fetchFile(path,fallback,cb){
   try{
-    fetch('catalogue.md',{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.text();})
-      .then(function(t){ if(t.indexOf('## ')<0) throw 0; ORIG=t; cb(t); })
-      .catch(function(){ cb(ORIG); });
-  }catch(e){ cb(ORIG); }
+    fetch(path,{cache:'no-cache'}).then(function(r){if(!r.ok)throw 0;return r.text();})
+      .then(function(t){ if(t.indexOf('## ')<0) throw 0; cb(t); })
+      .catch(function(){ cb(fallback); });
+  }catch(e){ cb(fallback); }
 }
+function fetchCat(cb){fetchFile('catalogue.md',ORIG,function(t){ORIG=t;cb(t);});}
 $('svNote').innerHTML = LS
   ? '<h4>Sauvegarde automatique active</h4><p>Chaque modification est enregistrée dans ce navigateur, mois par mois. Tu retrouveras ton planning en rouvrant la page. Les exports <code>.json</code> restent utiles comme archive ou pour passer d\'un appareil à l\'autre.</p>'
   : '<h4>Sauvegarde automatique indisponible</h4><p>Ce navigateur bloque le stockage local (navigation privée, ou page ouverte directement depuis un fichier). Utilise « Sauvegarder le mois » pour ne rien perdre.</p>';
@@ -2797,6 +3262,15 @@ if(!LS)$('svNote').className='note red';
     if(o.l)$('tl').value=o.l; if(o.g)$('tg').value=o.g;
     if(o.dw!=null)WANT_DW=String(o.dw);}catch(e){}}
   loadMonth();
+  try{LOG=JSON.parse(lget('fdr:log')||'{}')||{};}catch(e){LOG={};}
+  try{MES=JSON.parse(lget('fdr:mes')||'{}')||{};}catch(e){MES={};}
+  var today=new Date().toISOString().slice(0,10);
+  $('ed').value=today;$('sd').value=today;
+  var sl=lget('fdr:sea');
+  if(sl){$('tas').value=sl;loadSea(sl,true);}
+  else{$('tas').value=SORIG;loadSea(SORIG,true);
+    fetchFile('seances.md',SORIG,function(t){if(t!==SORIG){SORIG=t;$('tas').value=t;loadSea(t,true);}});}
+  renderMes();
   var local=lget('fdr:cat');
   if(local){$('ta').value=local;$('cbn').classList.add('on');loadCat(local,true);BOOTING=false;return;}
   $('ta').value=ORIG;loadCat(ORIG,true);

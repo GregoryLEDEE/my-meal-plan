@@ -2,7 +2,7 @@
    Conséquence : en ligne tu as toujours la dernière version de catalogue.md,
    hors ligne l'application continue de fonctionner avec la dernière copie connue. */
 const CACHE = 'feuille-de-route-v1';
-const ASSETS = ['./', './index.html', './catalogue.md', './manifest.webmanifest',
+const ASSETS = ['./', './index.html', './catalogue.md', './seances.md', './manifest.webmanifest',
                 './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {

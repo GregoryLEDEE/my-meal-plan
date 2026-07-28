@@ -1,15 +1,21 @@
 # Feuille de route — planificateur de repas
 
-Application d'une seule page, sans build ni dépendance : calendrier réel, macros
-par jour et par semaine, liste de courses quantifiée par rayon, catalogue de
-recettes éditable en texte.
+Application d'une seule page, sans build ni dépendance. Six onglets :
+
+- **Planning** — calendrier réel : une séance et quatre repas par jour, macros par jour et récapitulatif par semaine
+- **Courses** — liste quantifiée par rayon, filtrable par semaine, avec indicateurs d'optimisation
+- **Entraînement** — journal des charges, avec rappel de la séance précédente pour chaque exercice
+- **Suivi** — poids, tour de taille, genoux, pas ; courbe avec moyenne mobile sur 7 jours
+- **Programme** — repères, règles et ajustements
+- **Catalogue** — les deux fichiers source, éditables directement
 
 ## Fichiers
 
 | Fichier | Rôle |
 |---|---|
 | `index.html` | L'application entière. Contient aussi une copie de secours du catalogue. |
-| `catalogue.md` | **La source des recettes.** C'est le seul fichier à éditer au quotidien. |
+| `catalogue.md` | **La source des recettes.** |
+| `seances.md` | **La source des séances d'entraînement.** |
 | `manifest.webmanifest` | Installation sur l'écran d'accueil. |
 | `sw.js` | Fonctionnement hors ligne (réseau d'abord, cache en secours). |
 | `icon-*.png` | Icônes. |
@@ -36,6 +42,24 @@ héberge gratuitement : importer le dépôt, aucun réglage à changer, c'est d�
 
 L'application s'ouvre alors en plein écran, sans barre d'adresse, et fonctionne
 hors ligne — utile en magasin quand le réseau est mauvais.
+
+## Ajouter une séance
+
+Éditer `seances.md`. Un bloc par séance :
+
+```
+## A1 — Bas du corps
+type: muscu          # muscu | nage | marche | repos
+jour: 1              # 1 = lundi … 7 = dimanche
+duree: 70
+note: Amplitude plafonnée à 90°.
+exercices:
+- Presse à cuisses | 4 | 8-10 | Arrêt net à 90°.
+- Romanian deadlift | 3 | 8 | Genoux quasi tendus.
+```
+
+Pour la natation et le cardio, remplacer `exercices:` par `bloc:` suivi d'une
+ligne de texte libre par élément de la séance.
 
 ## Ajouter une recette
 
@@ -74,8 +98,13 @@ Le nom sert d'identifiant : il doit être unique.
   levier pour resserrer les courses.
 - **Poids cuit pour les protéines**, poids cru pour les féculents. À l'achat,
   compter environ **+30 %** sur les viandes et poissons.
-- **Sauvegarde automatique** dans le navigateur, mois par mois. Les exports
-  `.json` servent d'archive et permettent de passer d'un appareil à l'autre.
+- **Sauvegarde automatique** dans le navigateur : planning mois par mois, journal
+  des charges et mesures. Les exports `.json` et `.csv` servent d'archive et
+  permettent de passer d'un appareil à l'autre — le stockage local ne se
+  synchronise pas entre navigateurs.
+- **Le journal des charges garde la trace de la séance précédente** pour chaque
+  exercice. C'est l'indicateur central du programme : si le poids baisse et que
+  les charges tiennent, la perte est bien de la masse grasse.
 - Le catalogue modifié depuis l'application est stocké localement et prend le pas
   sur `catalogue.md`. Le bouton « Catalogue d'origine » efface cette version locale.
 - Aucune donnée ne quitte l'appareil : tout est calculé dans la page.
