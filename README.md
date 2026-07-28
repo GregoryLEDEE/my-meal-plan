@@ -2,10 +2,12 @@
 
 Application d'une seule page, sans build ni dépendance. Six onglets :
 
-- **Planning** — calendrier réel : une séance et quatre repas par jour, macros par jour et récapitulatif par semaine
+- **Jour** — l'écran du quotidien : la séance et les quatre repas du jour, validation d'un
+  geste, ajustement des portions, journal des charges intégré, bilan prévu / réalisé / cible
+- **Mois** — le calendrier réel : composition du planning, macros par jour, récapitulatif par semaine
 - **Courses** — liste quantifiée par rayon, filtrable par semaine, avec indicateurs d'optimisation
-- **Entraînement** — journal des charges, avec rappel de la séance précédente pour chaque exercice
-- **Suivi** — poids, tour de taille, genoux, pas ; courbe avec moyenne mobile sur 7 jours
+- **Suivi** — poids, tour de taille, genoux, pas ; courbe avec moyenne mobile sur 7 jours,
+  plus l'historique des séances et leur tonnage
 - **Programme** — repères, règles et ajustements
 - **Catalogue** — les deux fichiers source, éditables directement
 
@@ -34,6 +36,22 @@ héberge gratuitement : importer le dépôt, aucun réglage à changer, c'est d�
 1. `vercel.com` → *Add New* → *Project* → importer le dépôt.
 2. Framework preset : **Other**. Aucune commande de build, aucun dossier de sortie.
 3. *Deploy*.
+
+## La vue Jour
+
+C'est l'écran principal, celui qu'on garde ouvert dans la journée.
+
+- Flèches `‹` `›` pour passer d'un jour à l'autre, bouton *Aujourd'hui* pour revenir.
+- **Glisser une carte vers la droite** la valide ; **vers la gauche** ouvre le remplacement.
+  Les boutons `✓`, *Changer* et *Retirer* font la même chose à la souris.
+- Le sélecteur `− ×1 +` ajuste la portion réellement mangée par quart. Les grammages
+  des ingrédients et les macros suivent.
+- Le bilan compare trois lignes : **prévu** (ce qui est planifié), **réalisé** (ce qui est
+  validé, portions comprises) et **cible**. Seule la ligne *réalisé* est colorée.
+- Pour une séance de musculation, le journal des charges s'affiche directement en dessous,
+  avec le rappel de la dernière fois pour chaque exercice et de quoi ajouter ou retirer une série.
+
+Changer de jour dans cette vue aligne automatiquement le mois affiché dans l'onglet *Mois*.
 
 ## Installer sur téléphone
 
